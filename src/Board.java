@@ -1,0 +1,110 @@
+import java.util.Random;
+
+public class Board {
+
+    private char[][] grid = new char[10][10];  // отображение на экране
+    private Ship[][] ships = new Ship[10][10]; // объекты кораблей
+
+    // Конструктор
+    public Board() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                grid[i][j] = '.';
+            }
+        }
+    }
+
+    // Печать поля
+    public void printBoard() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                System.out.print(grid[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    // Ставим корабль вручную
+    public void placeShip(int x, int y, int size) {
+        Ship ship = new Ship(size);
+
+        for (int i = 0; i < size; i++) {
+            grid[x][y + i] = 'S';
+            ships[x][y + i] = ship;
+        }
+    }
+
+    // Новый метод: случайное размещение корабля
+    public void placeShipRandomly(int size) {
+        Random rand = new Random();
+        boolean placed = false;
+
+        while (!placed) {
+            int x = rand.nextInt(10);
+            int y = rand.nextInt(10);
+            boolean horizontal = rand.nextBoolean();
+
+            if (horizontal) {
+                if (y + size > 10) continue;
+                boolean collision = false;
+                for (int i = 0; i < size; i++) {
+                    if (ships[x][y + i] != null) {
+                        collision = true;
+                        break;
+                    }
+                }
+                if (collision) continue;
+
+                Ship ship = new Ship(size);
+                for (int i = 0; i < size; i++) {
+                    grid[x][y + i] = 'S';
+                    ships[x][y + i] = ship;
+                }
+                placed = true;
+            } else {
+                if (x + size > 10) continue;
+                boolean collision = false;
+                for (int i = 0; i < size; i++) {
+                    if (ships[x + i][y] != null) {
+                        collision = true;
+                        break;
+                    }
+                }
+                if (collision) continue;
+
+                Ship ship = new Ship(size);
+                for (int i = 0; i < size; i++) {
+                    grid[x + i][y] = 'S';
+                    ships[x + i][y] = ship;
+                }
+                placed = true;
+            }
+        }
+    }
+
+    // Выстрел
+    public int shoot(int x, int y) {
+        if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+            System.out.println(" Неверные координаты!");
+            return -1;
+        }
+
+        if (grid[x][y] == 'X' || grid[x][y] == 'O') {
+            System.out.println(" Ты уже стрелял сюда!");
+            return -1;
+        }
+
+        if (ships[x][y] != null) {
+            grid[x][y] = 'X';
+            Ship ship = ships[x][y];
+            ship.hit();
+            if (ship.isSunk()) {
+                System.out.println(" Корабль уничтожен!");
+            }
+            return 1;
+        } else {
+            grid[x][y] = 'O';
+            return 0;
+        }
+    }
+}
