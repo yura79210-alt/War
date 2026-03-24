@@ -107,4 +107,18 @@ public class Board {
             return 0;
         }
     }
+    public boolean allShipsSunk() {
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+
+                if (ships[i][j] != null && !ships[i][j].isSunk()) {
+                    return false;
+                }
+
+            }
+        }
+
+        return true;
+    }
 }

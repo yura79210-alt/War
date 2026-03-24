@@ -18,7 +18,7 @@ public class Main {
         board.placeShipRandomly(1);
 
         System.out.println("Игра началась! Введи координаты выстрела X и Y (0-9)");
-
+        board.printBoard();
         while (true) {
             System.out.print("Введи X: ");
             int x = scanner.nextInt();
@@ -36,6 +36,10 @@ public class Main {
             System.out.println(result == 1 ? "ПОПАЛ!" : "МИМО");
 
             board.printBoard();
+            if (board.allShipsSunk()) {
+                System.out.println(" ВСЕ КОРАБЛИ УНИЧТОЖЕНЫ! ТЫ ВЫИГРАЛ!");
+                break;
+            }
         }
     }
 }
