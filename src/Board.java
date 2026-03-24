@@ -13,6 +13,20 @@ public class Board {
             }
         }
     }
+    public void printHiddenBoard() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+
+                if (grid[i][j] == 'S') {
+                    System.out.print(". "); // скрываем корабль
+                } else {
+                    System.out.print(grid[i][j] + " ");
+                }
+
+            }
+            System.out.println();
+        }
+    }
 
     // Печать поля
     public void printBoard() {
