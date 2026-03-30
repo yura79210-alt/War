@@ -13,6 +13,31 @@ public class Board {
             }
         }
     }
+    public void printPrettyBoard(boolean hideShips) {
+
+        System.out.print("  ");
+        for (char c = 'A'; c < 'A' + 10; c++) {
+            System.out.print(c + " ");
+        }
+        System.out.println();
+
+        for (int i = 0; i < 10; i++) {
+            System.out.print((i + 1) + " ");
+
+            for (int j = 0; j < 10; j++) {
+
+                char cell = grid[i][j];
+
+                if (hideShips && cell == 'S') {
+                    System.out.print(". ");
+                } else {
+                    System.out.print(cell + " ");
+                }
+            }
+
+            System.out.println();
+        }
+    }
     public void printHiddenBoard() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {

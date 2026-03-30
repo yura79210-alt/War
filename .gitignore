@@ -3,6 +3,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+.idea
+ship.iml
+moves.txt
+.gitignore
 
 ### Eclipse ###
 .apt_generated

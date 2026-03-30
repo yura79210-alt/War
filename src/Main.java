@@ -31,35 +31,54 @@ public class Main {
         board2.placeShipRandomly(1);
         boolean player1Turn = true;
         System.out.println("Игра началась! Введи координаты выстрела X и Y (0-9)");
-
+        String userInput;
+        int[] coords;
+        int x, y;
         while (true) {
             Board currentBoard;
             String playerName;
+
             if (player1Turn) {
-                currentBoard = board2; // стреляет по врагу
+                currentBoard = board2; // игрок 1 стреляет по игроку 2
                 playerName = "Игрок 1";
             } else {
                 currentBoard = board1;
                 playerName = "Игрок 2";
             }
-            System.out.println(playerName + ", твой ход!");
-            currentBoard.printHiddenBoard();
-            System.out.print("Введи X: ");
-            int x = scanner.nextInt();
-            System.out.print("Введи Y: ");
-            int y = scanner.nextInt();
-            int result = currentBoard.shoot(x, y);
-            if (result == -1) continue;
-            Move move = new Move(x, y, result == 1);
-            MoveLogger.logMove(move);
-            System.out.println(result == 1 ? "ПОПАЛ!" : "МИМО");
-            if (currentBoard.allShipsSunk()) {
-                System.out.println("🏆 " + playerName + " ВЫИГРАЛ!");
-                break;
+
+            System.out.println("\n" + playerName + ", твой ход!");
+            try {
+                System.out.print("Введи координаты (например A1): ");
+
+                userInput = scanner.next();
+
+                coords = InputParser.parse(userInput);
+                x = coords[0];
+                y = coords[1];
+
+                int result = currentBoard.shoot(x, y);
+
+                if (result == -1) continue;
+
+                Move move = new Move(x, y, result == 1);
+                MoveLogger.logMove(move);
+
+                System.out.println(result == 1 ? "ПОПАЛ!" : "МИМО");
+
+                currentBoard.printPrettyBoard(true);
+
+                if (currentBoard.allShipsSunk()) {
+                    System.out.println("🏆 Победил " + playerName);
+                    break;
+                }
+
+                if (result == 0) {
+                    player1Turn = !player1Turn;
+                }
+
+            } catch (Exception e) {
+                System.out.println("❌ Неверный ввод! Пример: A1 или 1A");
             }
-            if (result == 0) { // промах
-                player1Turn = !player1Turn;
-            } // смена игрока
         }
     }
 }
