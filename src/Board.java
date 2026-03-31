@@ -65,11 +65,12 @@ public class Board {
 
     // Ставим корабль вручную
     public void placeShip(int x, int y, int size) {
-        Ship ship = new Ship(size);
+        Ship ship = new Ship();
 
         for (int i = 0; i < size; i++) {
             grid[x][y + i] = 'S';
             ships[x][y + i] = ship;
+            ship.addCoordinate(x, y + i);
         }
     }
 
@@ -85,36 +86,51 @@ public class Board {
 
             if (horizontal) {
                 if (y + size > 10) continue;
+
                 boolean collision = false;
-                for (int i = 0; i < size; i++) {
-                    if (ships[x][y + i] != null) {
-                        collision = true;
-                        break;
+                for (int i = -1; i <= size; i++) { // проверяем соседние клетки по горизонтали и сверху/снизу
+                    for (int j = -1; j <= 1; j++) {
+                        int nx = x + j;
+                        int ny = y + i;
+                        if (nx >= 0 && nx < 10 && ny >= 0 && ny < 10) {
+                            if (ships[nx][ny] != null) {
+                                collision = true;
+                            }
+                        }
                     }
                 }
                 if (collision) continue;
 
-                Ship ship = new Ship(size);
+                Ship ship = new Ship();
                 for (int i = 0; i < size; i++) {
                     grid[x][y + i] = 'S';
                     ships[x][y + i] = ship;
+                    ship.addCoordinate(x, y + i);
                 }
                 placed = true;
-            } else {
+
+            } else { // вертикально
                 if (x + size > 10) continue;
+
                 boolean collision = false;
-                for (int i = 0; i < size; i++) {
-                    if (ships[x + i][y] != null) {
-                        collision = true;
-                        break;
+                for (int i = -1; i <= size; i++) { // проверяем соседние клетки по вертикали и слева/справа
+                    for (int j = -1; j <= 1; j++) {
+                        int nx = x + i;
+                        int ny = y + j;
+                        if (nx >= 0 && nx < 10 && ny >= 0 && ny < 10) {
+                            if (ships[nx][ny] != null) {
+                                collision = true;
+                            }
+                        }
                     }
                 }
                 if (collision) continue;
 
-                Ship ship = new Ship(size);
+                Ship ship = new Ship();
                 for (int i = 0; i < size; i++) {
                     grid[x + i][y] = 'S';
                     ships[x + i][y] = ship;
+                    ship.addCoordinate(x + i, y);
                 }
                 placed = true;
             }
@@ -128,7 +144,7 @@ public class Board {
             return -1;
         }
 
-        if (grid[x][y] == 'X' || grid[x][y] == 'O') {
+        if (grid[x][y] == 'X' || grid[x][y] == 'O' || grid[x][y] == '+') {
             System.out.println(" Ты уже стрелял сюда!");
             return -1;
         }
@@ -137,14 +153,24 @@ public class Board {
             grid[x][y] = 'X';
             Ship ship = ships[x][y];
             ship.hit();
+
             if (ship.isSunk()) {
                 System.out.println(" Корабль уничтожен!");
+
+                for (int[] coord : ship.getCoordinates()) {
+                    int cx = coord[0];
+                    int cy = coord[1];
+                    grid[cx][cy] = '+'; //  ПЕРЕЗАТИРАЕМ ВСЁ
+                }
+            } else {
+                grid[x][y] = 'X'; //  ТОЛЬКО ЕСЛИ НЕ УНИЧТОЖЕН
             }
             return 1;
         } else {
             grid[x][y] = 'O';
             return 0;
         }
+
     }
     public boolean allShipsSunk() {
 
