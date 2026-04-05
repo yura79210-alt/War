@@ -6,6 +6,26 @@ public class Main {
         Board board1 = new Board();
         Board board2 = new Board();
         Scanner scanner = new Scanner(System.in);
+        System.out.print("Введите имя игрока 1: ");
+        String player1Name = scanner.nextLine();
+
+        if (player1Name.isEmpty()) {
+            player1Name = "Игрок 1";
+        }
+
+        System.out.print("Введите имя игрока 2: ");
+        String player2Name = scanner.nextLine();
+
+        if (player2Name.isEmpty()) {
+            player2Name = "Игрок 2";
+        }
+        if (player1Name.equalsIgnoreCase("admin") || player2Name.equalsIgnoreCase("admin")) {
+            System.out.println("🔐 ADMIN MODE");
+
+            MoveLogger.showAllGames(); // позже сделаем
+            return; // выходим из игры
+        }
+        MoveLogger.logGameStart(player1Name, player2Name);
         // Случайная расстановка кораблей первого игрока
         board1.placeShipRandomly(4); // 1 корабль 4 клетки
         board1.placeShipRandomly(3); // 2 корабля 3 клетки
@@ -40,11 +60,20 @@ public class Main {
 
             if (player1Turn) {
                 currentBoard = board2; // игрок 1 стреляет по игроку 2
-                playerName = "Игрок 1";
+                playerName = player1Name;
             } else {
                 currentBoard = board1;
-                playerName = "Игрок 2";
+                playerName = player2Name;
             }
+            System.out.println("\nТВОЁ ПОЛЕ:");
+            if (player1Turn) {
+                board1.printPrettyBoard(false);
+            } else {
+                board2.printPrettyBoard(false);
+            }
+
+            System.out.println("\nПОЛЕ ПРОТИВНИКА:");
+            currentBoard.printPrettyBoard(true);
 
             System.out.println("\n" + playerName + ", твой ход!");
             try {
@@ -60,24 +89,38 @@ public class Main {
 
                 if (result == -1) continue;
 
-                Move move = new Move(x, y, result == 1);
-                MoveLogger.logMove(move);
+                String moveText = userInput.toUpperCase();
+                MoveLogger.logMove(playerName, moveText, result == 1);
 
                 System.out.println(result == 1 ? "ПОПАЛ!" : "МИМО");
+
 
                 currentBoard.printPrettyBoard(true);
 
                 if (currentBoard.allShipsSunk()) {
-                    System.out.println("🏆 Победил " + playerName);
+                    System.out.println(" Победил " + playerName);
+                    MoveLogger.logGameEnd(playerName);
                     break;
                 }
 
-                if (result == 0) {
+                if (result == 1) {
+                    System.out.println(" Попадание! Ходишь ещё раз.");
+                } else if (result == 0) {
+                    System.out.println(" Мимо. Ход переходит.");
+
+                    System.out.println("Нажми Enter, чтобы передать ход...");
+                    scanner.nextLine();
+                    scanner.nextLine();
+
+                    for (int i = 0; i < 30; i++) {
+                        System.out.println();
+                    }
+
                     player1Turn = !player1Turn;
                 }
 
             } catch (Exception e) {
-                System.out.println("❌ Неверный ввод! Пример: A1 или 1A");
+                System.out.println(" Неверный ввод! Пример: A1 или 1A");
             }
         }
     }
